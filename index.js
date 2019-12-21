@@ -46,10 +46,15 @@ class OptimizillaPlugin {
 
   writeLock() {
     let lockPath = path.resolve(this.options.src, lockFile);
-    fs.writeFile(lockPath, JSON.stringify(this.lock, null, 2));
+    fs.writeFile(lockPath, JSON.stringify(this.lock, null, 2), err => {
+      if (err) {
+        console.error('\n\n', 'Could not save image-lock.json file');
+        throw err;
+      }
+    });
   }
 
-  shutDown() {
+  shutDown(callback) {
     console.log('\n\n', `Optimized ${this.optimizeCount} files`, '\n');
 
     if (this.removedBytes) {
@@ -60,6 +65,8 @@ class OptimizillaPlugin {
     if (this.lock) {
       this.writeLock();
     }
+
+    callback();
   }
 
   apply(compiler) {
@@ -99,16 +106,13 @@ class OptimizillaPlugin {
             // Remove the optimized image from the queue
             queue = queue.filter(a => a !== asset);
             if (queue.length === 0) {
-              this.shutDown();
-              console.log('\n\n', 'Running callback: ', typeof callback, '\n\n');
+              this.shutDown(callback);
               callback();
             }
           });
         });
       } else {
-        this.shutDown();
-        console.log('\n\n', 'Running callback: ', typeof callback, '\n\n');
-        callback();
+        this.shutDown(callback);
       }
     });
   }

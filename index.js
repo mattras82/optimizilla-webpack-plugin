@@ -12,7 +12,7 @@ class OptimizillaPlugin {
 
     this.pluginName = 'optimizilla-webpack-plugin';
     this.options = Object.assign({
-      replace: false,
+      replace: true,
       ext: ['png', 'jpg', 'jpeg'],
       src: process.cwd()
     }, opts);
@@ -79,7 +79,7 @@ class OptimizillaPlugin {
       let cwd = path.resolve(this.options.src);
       let globs = [];
 
-      let ext = extensions.map(e => `**.${e}`);
+      let ext = this.options.ext.map(e => `**.${e}`);
 
       fg(ext, {
         cwd: cwd,
@@ -115,7 +115,12 @@ class OptimizillaPlugin {
 
           queue.forEach(asset => {
             // Process optimize-cli command
-            let opt = spawn(command, [asset.name, '-r'], {cwd: path.dirname(asset.filePath)});
+            let flags = [asset.name];
+            if (this.options.replace) {
+              // Replace each image file
+              flags.push('-r')
+            }
+            let opt = spawn(command, flags, {cwd: path.dirname(asset.filePath)});
 
             opt.stderr.on('data', (data) => {
               asset.setError(data);

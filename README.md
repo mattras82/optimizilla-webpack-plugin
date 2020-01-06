@@ -12,15 +12,14 @@ $ npm install -D optimizilla-webpack-plugin
 ## Example Webpack Config
 
 ```javascript
-const path = require('path');
 const optimizillaWebpackPlugin = require('optimizilla-webpack-plugin');
 
     //in your webpack plugins array
     module.exports = {
       plugins: [
-          new optimizillaPngWebpackPlugin(
+          new optimizillaWebpackPlugin(
             ext: ['png', 'jpg', 'jpeg'],
-            src: path.resolve(__dirname, 'src'),
+            src: 'images'
           )
       ]
     }

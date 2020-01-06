@@ -64,6 +64,8 @@ class OptimizillaPlugin {
       console.log('\n\n', `Optimized ${this.optimizeCount} files`, '\n');
       let percent = (this.removedBytes / this.totalSize * 100).toFixed(2);
       console.log('\n', `Removed ${(this.removedBytes / 1000.0).toFixed(2)}KB (${percent}% reduction)`, '\n\n');
+    } else {
+      console.log('\n', 'No data was removed from the image files', '\n');
     }
 
     if (this.lock) {
@@ -81,27 +83,27 @@ class OptimizillaPlugin {
 
       let ext = this.options.ext.map(e => `**.${e}`);
 
-      fg(ext, {
-        cwd: cwd,
-        onlyFiles: true,
-        stats: true
-      }).then(globs => {
-
-        globs.forEach(obj => {
+      let fastGlobs = fg.sync(ext, {cwd: cwd, onlyFiles: true, stats: true});
+      fastGlobs.forEach(obj => {
+        if (!this.isLocked(obj.name)) {
+          globs.push(obj.path);
+          this.totalSize += obj.stats.size;
           queue.push(new asset(obj.name, obj.stats.size, path.resolve(cwd, obj.path)));
-        });
+        }
+      });
 
-        Object.entries(compilation.assets).forEach(([key,val]) => {
-          let name = path.basename(key);
-          if (this.reg.test(name) && !this.isLocked(name) && globs.indexOf(name) === -1) {
-            let size = val.size();
-            this.totalSize += size;
-            queue.push(new asset(name, size, path.resolve(cwd, key)));
-          }
-        });
+      Object.entries(compilation.assets).forEach(([key,val]) => {
+        let name = path.basename(key);
+        if (this.reg.test(name) && !this.isLocked(name) && globs.indexOf(name) === -1) {
+          let size = val.size();
+          this.totalSize += size;
+          queue.push(new asset(name, size, path.resolve(cwd, key)));
+        }
+      });
 
-        if (queue.length > 0) {
+      if (queue.length > 0) {
 
+        try {
           let command = /^win/.test(process.platform) ? 'optimizilla.cmd' : 'optimizilla';
 
           if (queue.length > 20) {
@@ -133,20 +135,25 @@ class OptimizillaPlugin {
                   this.removedBytes += asset.checkSize(stats.size);
                 }
                 this.lockAsset(asset);
+              } else {
+                console.log(`\nError optimizing ${asset.name}`);
+                console.log(`\e${asset.error}`);
               }
               // Remove the optimized image from the queue
               queue = queue.filter(a => a !== asset);
 
               if (queue.length === 0) {
                 this.shutDown(callback);
-                callback();
               }
             });
           });
-        } else {
+        } catch(e) {
+          console.log('Error in Optimizilla Plugin:\n',e);
           this.shutDown(callback);
         }
-      });
+      } else {
+        this.shutDown(callback);
+      }
     });
   }
 }

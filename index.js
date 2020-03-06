@@ -1,9 +1,7 @@
 'use strict';
 const asset = require('./lib/asset');
-const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const fg = require('fast-glob');
 const lockFile = 'image-lock.json';
 
 class OptimizillaPlugin {
@@ -83,6 +81,7 @@ class OptimizillaPlugin {
 
       let ext = this.options.ext.map(e => `**.${e}`);
 
+      const fg = require('fast-glob');
       let fastGlobs = fg.sync(ext, {cwd: cwd, onlyFiles: true, stats: true});
       fastGlobs.forEach(obj => {
         if (!this.isLocked(obj.name)) {
@@ -104,7 +103,7 @@ class OptimizillaPlugin {
       if (queue.length > 0) {
 
         try {
-          let command = /^win/.test(process.platform) ? 'optimizilla.cmd' : 'optimizilla';
+          let command = `npx${/^win/.test(process.platform) ? '.cmd' : ''}`;
 
           if (queue.length > 20) {
             console.log('\n\n\n', 'WARNING: ImageCompressor.com allows 20 images at a time.');
@@ -115,9 +114,10 @@ class OptimizillaPlugin {
 
           console.log('\n\n\n', `Optimizing ${queue.length} images ...`);
 
+          const { spawn } = require('child_process');
           queue.forEach(asset => {
             // Process optimize-cli command
-            let flags = [asset.name];
+            let flags = ['optimizilla', asset.name];
             if (this.options.replace) {
               // Replace each image file
               flags.push('-r')

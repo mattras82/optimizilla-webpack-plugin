@@ -1,5 +1,6 @@
 'use strict';
 const asset = require('./lib/asset');
+const c = require('./util/logs');
 const path = require('path');
 const fs = require('fs');
 const lockFile = 'image-lock.json';
@@ -50,7 +51,7 @@ class OptimizillaPlugin {
     let lockPath = path.resolve(this.options.src, lockFile);
     fs.writeFile(lockPath, JSON.stringify(this.lock, null, 2), err => {
       if (err) {
-        console.error('\n\n', 'Could not save image-lock.json file');
+        c.error('Could not save image-lock.json file');
         throw err;
       }
     });
@@ -59,14 +60,14 @@ class OptimizillaPlugin {
   shutDown(callback) {
 
     if (this.removedBytes) {
-      console.log('\n\n', `Optimized ${this.optimizeCount} files`, '\n');
+      c.success(`Optimized ${this.optimizeCount} files`);
       let percent = (this.removedBytes / this.totalSize * 100).toFixed(2);
-      console.log('\n', `Removed ${(this.removedBytes / 1000.0).toFixed(2)}KB (${percent}% reduction)`, '\n\n');
+      c.log(`Removed ${(this.removedBytes / 1000.0).toFixed(2)}KB (${percent}% reduction)`);
     } else {
-      console.log('\n', 'No data was removed from the image files', '\n');
+      c.log('No data was removed from the image files');
     }
 
-    if (this.lock) {
+    if (this.lock && this.lock.length) {
       this.writeLock();
     }
 
@@ -106,9 +107,9 @@ class OptimizillaPlugin {
           let command = `npx${/^win/.test(process.platform) ? '.cmd' : ''}`;
 
           if (queue.length > 20) {
-            console.log('\n\n\n', 'WARNING: ImageCompressor.com allows 20 images at a time.');
-            console.log('\n', `Removing ${queue.length - 20} images from the current queue.`);
-            console.log('\n\n', 'Please wait 3 - 5 minutes before running this again.');
+            c.warn('WARNING: ImageCompressor.com allows 20 images at a time.');
+            c.log(`Removing ${queue.length - 20} images from the current queue.`);
+            c.emphasis('Please wait 3 - 5 minutes before running this again.');
             queue = queue.slice(0, 20);
           }
 
@@ -136,8 +137,8 @@ class OptimizillaPlugin {
                 }
                 this.lockAsset(asset);
               } else {
-                console.log(`\nError optimizing ${asset.name}`);
-                console.log(`\e${asset.error}`);
+                c.error(`\nError optimizing ${asset.name}`);
+                console.log(asset.error);
               }
               // Remove the optimized image from the queue
               queue = queue.filter(a => a !== asset);
@@ -148,7 +149,8 @@ class OptimizillaPlugin {
             });
           });
         } catch(e) {
-          console.log('Error in Optimizilla Plugin:\n',e);
+          c.error('Error in Optimizilla Plugin:');
+          console.log(e);
           this.shutDown(callback);
         }
       } else {

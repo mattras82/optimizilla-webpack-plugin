@@ -1,5 +1,6 @@
 const plugin = require('./index');
 const path = require('path');
+const c = require('./util/logs');
 const fs = require('fs');
 
 let testPath = path.resolve(__dirname, 'test');
@@ -18,14 +19,14 @@ const fakeCompilation = {
 };
 
 const fakeCallback = () => {
-  console.log('\n\nFake callback has been called\n\n');
+  c.success('Fake callback has been called');
 };
 
 const fakeCompiler = {
   hooks: {
     emit: {
       tapAsync: (name, run) => {
-        console.log(`\nrunning ${name} plugin\n`);
+        c.log(`running ${name} plugin`);
         run(fakeCompilation, fakeCallback);
       }
     }

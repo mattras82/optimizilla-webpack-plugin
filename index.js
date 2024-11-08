@@ -67,7 +67,7 @@ class OptimizillaPlugin {
       c.log('No data was removed from the image files');
     }
 
-    if (this.lock && this.lock.length) {
+    if (this.lock && Object.keys(this.lock).length) {
       this.writeLock();
     }
 

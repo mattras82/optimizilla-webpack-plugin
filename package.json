@@ -1,6 +1,6 @@
 {
   "name": "optimizilla-webpack-plugin",
-  "version": "2.0.5",
+  "version": "2.1.0",
   "description": "a webpack plugin to optimize images through optimizilla",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
-    "fast-glob": "^3.2.2",
-    "optimizilla-cli": "^5.0.0"
+    "fast-glob": "^3.3.3",
+    "optimizilla-cli-new": "^6.0.0"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,6 @@
   ],
   "author": "Matthew Rasmussen",
   "license": "MIT",
-  "peerDependencies": {
-    "webpack": "^4.0.0"
-  },
   "bugs": {
     "url": "https://github.com/mattras82/optimizilla-webpack-plugin/issues"
   },

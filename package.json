@@ -1,6 +1,6 @@
 {
   "name": "optimizilla-webpack-plugin",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "a webpack 5 plugin to optimize images in shared repositories",
   "scripts": {
     "test": "webpack --config ./test/webpack.config.js",

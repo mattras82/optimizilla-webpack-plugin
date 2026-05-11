@@ -1,15 +1,24 @@
 {
   "name": "optimizilla-webpack-plugin",
-  "version": "2.1.1",
-  "description": "a webpack plugin to optimize images through optimizilla",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "a webpack 5 plugin to optimize images in shared repositories",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "webpack --config ./test/webpack.config.js",
+    "compile:mjs": "babel src --out-dir dist --out-file-extension .mjs",
+    "compile:cjs": "babel src --out-dir dist --out-file-extension .cjs --config-file ./babel.config.compat.json",
+    "build": "npm run compile:cjs && npm run compile:mjs && tsc --emitDeclarationOnly"
   },
   "dependencies": {
-    "colors": "^1.4.0",
     "fast-glob": "^3.3.3",
-    "optimizilla-cli-new": "^6.0.1"
+    "picocolors": "^1.1.1"
+  },
+  "peerDependenciesMeta": {
+    "imagemin": {
+      "optional": true
+    },
+    "svgo": {
+      "optional": true
+    }
   },
   "repository": {
     "type": "git",
@@ -28,6 +37,36 @@
   "bugs": {
     "url": "https://github.com/mattras82/optimizilla-webpack-plugin/issues"
   },
+  "main": "./dist/index.cjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
   "homepage": "https://github.com/mattras82/optimizilla-webpack-plugin",
-  "devDependencies": {}
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "@types/imagemin": "^9.0.1",
+    "@types/webpack": "^5.28.5",
+    "babel-plugin-transform-rewrite-imports": "^1.5.4",
+    "copy-webpack-plugin": "^14.0.0",
+    "imagemin": "^9.0.1",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^10.0.0",
+    "imagemin-svgo": "^12.0.0",
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
+  }
 }

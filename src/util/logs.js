@@ -1,6 +1,6 @@
 'use strict';
 
-const colors = require('colors/safe');
+import pc from 'picocolors';
 
 let logs = {};
 
@@ -9,7 +9,7 @@ let logs = {};
  * @param {string} m
  */
 logs.log = m => {
-  console.log(colors.white(`\n${m}\n`));
+  console.log(pc.white(`\n${m}\n`));
 };
 
 /**
@@ -17,7 +17,7 @@ logs.log = m => {
  * @param {string} m
  */
 logs.success = m => {
-  console.log(colors.green.bold(`\n${m}\n`));
+  console.log(pc.green(pc.bold(`\n${m}\n`)));
 };
 
 /**
@@ -25,7 +25,7 @@ logs.success = m => {
  * @param {string} m
  */
 logs.warn = m => {
-  console.log(colors.brightYellow(`\n${m}\n`));
+  console.log(pc.yellowBright(`\n${m}\n`));
 };
 
 /**
@@ -33,7 +33,7 @@ logs.warn = m => {
  * @param {string} m
  */
 logs.error = m => {
-  console.log(colors.red.bold(`\n${m}\n`));
+  console.log(pc.red(pc.bold(`\n${m}\n`)));
 };
 
 /**
@@ -41,7 +41,7 @@ logs.error = m => {
  * @param {string} m
  */
 logs.emphasis = m => {
-  console.log(colors.underline.magenta.bold(`\n${m}\n`));
+  console.log(pc.underline(pc.magenta(pc.bold(`\n${m}\n`))));
 };
 
 /**
@@ -53,11 +53,11 @@ logs.info = () => {
 
 /**
  * Returns a Promise that resolves after the given duration
- * @param {int} duration
+ * @param {number} duration
  * @returns {Promise}
  */
 logs.timeout = duration => {
   return new Promise(r => setTimeout(r, duration));
 };
 
-module.exports = logs;
+export { logs };
